@@ -1,321 +1,315 @@
-# Automated Desktop File Organizer
+# Automated Desktop & Downloads File Organizer
 
-A lightweight, robust, and continuous background file organizer built in Python using Watchdog. It automatically monitors a designated directory (such as `C:\FileOrganizerTest` or your Windows `Downloads` folder) and neatly sorts incoming files into categorized subfolders based on file extensions.
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Type Checked: Pyright](https://img.shields.io/badge/type%20checked-pyright-007acc.svg)](https://github.com/microsoft/pyright)
+[![Tests: Pytest](https://img.shields.io/badge/tests-33%20passed-brightgreen.svg)](https://docs.pytest.org/)
+[![Platform: Windows](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-lightgrey.svg)]()
+
+A lightweight, robust, and continuous background file organizer built in Python. It automatically monitors any designated directory (such as your **Desktop**, **Downloads**, or custom test folder) and neatly sorts loose files into categorized folders based on file types in real-time.
+
+Features a modern **Graphical User Interface (GUI)**, **1-Click batch sweep**, **file stability verification** (to avoid moving partial downloads), **collision-free duplicate renaming**, and full **Undo / Revert history**.
 
 ---
 
 ## Table of Contents
 
-- [Features](#features)
-- [Project Architecture](#project-architecture)
-- [Requirements](#requirements)
-- [Installation & Virtual Environment](#installation--virtual-environment)
-- [Configuration Guide](#configuration-guide)
-- [How to Run](#how-to-run)
-- [Running in Background on Windows](#running-in-background-on-windows)
-- [How to Switch to Real Downloads Directory](#how-to-switch-to-real-downloads-directory)
-- [Testing](#testing)
-- [Safety Guarantees](#safety-guarantees)
-- [Troubleshooting](#troubleshooting)
-- [Author & Project Owner](#author--project-owner)
-- [License](#license)
-
-
----
-
-## Features
-
-- 🖥️ **Modern Desktop & Downloads GUI**: Intuitive, responsive dashboard with 1-click presets for Desktop and Downloads, live event stream, and settings editor.
-- 📂 **Continuous Event-Driven Monitoring**: Uses Watchdog filesystem events (`on_created`, `on_moved`) instead of polling or high-CPU scanning.
-- ⚡ **Instant Batch Sweep**: One-click button in GUI to immediately organize existing loose files in any target directory.
-- ⏳ **Download Completion & Stability Detection**: Intelligently inspects file size stability over configurable intervals to ensure partially downloaded or written files are never moved prematurely.
-- 🔀 **Collision-Free Duplicate Handling**: Appends incremental suffix numbers (`report_1.pdf`, `report_2.pdf`) so existing files are never overwritten.
-- 🛡️ **Temporary File Filter**: Automatically ignores `.crdownload`, `.part`, `.tmp`, and other active browser temporary download files until completion.
-- 📁 **Automated Folder Creation**: Seamlessly creates missing category folders (`Documents/`, `Images/`, `Videos/`, etc.) on demand.
-- ⚡ **Concurrent Event Processing**: Multi-threaded worker pool prevents event dropping and avoids blocking Watchdog during large file stability checks.
-- 📝 **Centralized Logging**: Outputs detailed operation logs to both console, GUI window, and `logs/organizer.log`.
-- 🛑 **Graceful Lifecycle Management**: Clean shutdown on `Ctrl+C` or GUI close with in-flight worker completion.
+- [🚀 Quick Start (Easiest Way)](#-quick-start-easiest-way)
+- [✨ Key Features](#-key-features)
+- [🏗️ System Architecture](#️-system-architecture)
+- [📁 Repository Structure](#-repository-structure)
+- [💻 Installation & Manual Setup](#-installation--manual-setup)
+- [🖥️ How to Use](#️-how-to-use)
+  - [1. Using the Graphical Interface (GUI)](#1-using-the-graphical-interface-gui)
+  - [2. Using the Command Line Interface (CLI)](#2-using-the-command-line-interface-cli)
+  - [3. Running Continuously in the Background](#3-running-continuously-in-the-background)
+- [⚙️ Configuration Guide (`config.json`)](#️-configuration-guide-configjson)
+- [🛡️ Safety Guarantees & Revert System](#️-safety-guarantees--revert-system)
+- [🧪 Running the Test Suite](#-running-the-test-suite)
+- [❓ Troubleshooting & FAQ](#-troubleshooting--faq)
+- [🤝 Contributing Guidelines](#-contributing-guidelines)
+- [👤 Author & Project Owner](#-author--project-owner)
+- [📜 License](#-license)
 
 ---
 
-## Project Architecture
+## 🚀 Quick Start (Easiest Way)
 
-```text
-automated-desktop-file-organizer/
-│
-├── src/
-│   ├── main.py              # CLI entry point, signal handlers, lifecycle
-│   ├── config.py            # Configuration loader, dataclasses, category lookup
-│   ├── watcher.py           # Watchdog filesystem event observer & worker queue
-│   ├── organizer.py         # Categorization, stability verification, move executor
-│   ├── file_utils.py        # Unique naming, extension parsing, safe move helpers
-│   └── logger.py            # Centralized UTF-8 multi-handler logger
-│
-├── tests/
-│   ├── test_config.py       # Unit tests for config parsing and defaults
-│   ├── test_file_utils.py   # Unit tests for file operations & stability
-│   ├── test_organizer.py    # Integration tests for categorization & duplicate handling
-│   └── live_verification.py # Live integration tester on C:\FileOrganizerTest
-│
-├── logs/
-│   └── organizer.log        # Rolling execution logs
-│
-├── config.json              # Main JSON configuration file
-├── requirements.txt         # Package dependencies
-├── README.md                # Comprehensive documentation
-├── .gitignore               # Ignored artifacts and caches
-└── LICENSE                  # MIT License
-```
+You do **not** need complex setup commands. 
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/subediSanjok/Automated-Desktop-File-Organizer.git
+   cd Automated-Desktop-File-Organizer
+   ```
+2. **Double-Click `Start_Organizer_GUI.bat`**:
+   - Automatically detects Python.
+   - Automatically sets up a local virtual environment (`venv`).
+   - Automatically installs required dependencies (`watchdog`, `pytest`).
+   - Opens the Desktop Organizer GUI instantly!
+
+---
+
+## ✨ Key Features
+
+- 🖥️ **Modern Desktop GUI**: Fast, responsive dashboard with 1-click presets for Desktop and Downloads, live event streams, statistics counter, and settings manager.
+- 📂 **Continuous Event-Driven Monitoring**: Leverages native filesystem notifications via Python `watchdog` instead of CPU-heavy polling loops.
+- ⚡ **1-Click Batch Sweep ("Organize Now")**: Instant sweep and organization of existing loose files in any target directory.
+- ⏳ **Download Stability Detection**: Intelligently verifies file size stability over configurable time intervals before moving, preventing incomplete browser downloads or active file writes from corrupting.
+- 🔀 **Zero-Loss Duplicate Renaming**: Appends incremental numbering (`report_1.pdf`, `report_2.pdf`) so existing files are never overwritten.
+- 🛡️ **Temporary & System File Filter**: Automatically ignores `.crdownload`, `.part`, `.tmp`, and hidden system files until download completion.
+- 📁 **Dynamic Category Creation**: Automatically creates destination folders (`Documents/`, `Images/`, `Videos/`, `Audio/`, `Archives/`, `Code/`, `Others/`) as needed.
+- ⏪ **Undo & Full Directory Revert**: Tracked history manager allows single-batch rollback or sweeping all files back to the root directory with empty folder cleanup.
+- ⚡ **Multi-Threaded Worker Pool**: Concurrent background task workers ensure non-blocking event processing during large file transfers.
+- 📝 **Centralized UTF-8 Logging**: Real-time log stream visible in GUI and saved locally to `logs/organizer.log`.
+
+---
+
+## 🏗️ System Architecture
 
 ```mermaid
 graph TD
-    A[New File Created / Renamed] --> B[Watchdog Observer]
+    A[New File Created / Downloaded] --> B[Watchdog Filesystem Observer]
     B --> C[FileOrganizerEventHandler]
-    C --> D[Event Queue]
+    C --> D[Thread-Safe Event Queue]
     D --> E[Thread Pool Workers]
     E --> F{Temporary / Ignored File?}
-    F -- Yes --> G[Ignore & Wait]
-    F -- No --> H[Stability Check]
+    F -- Yes (.tmp / .crdownload) --> G[Ignore & Wait for Completion]
+    F -- No --> H[Stability Check Loop]
     H -- Size Changing --> H
-    H -- File Stable --> I[Resolve Category]
-    I --> J[Check / Resolve Collisions]
-    J --> K[Safe Move]
-    K --> L[Append to organizer.log]
+    H -- File Size Stable --> I[Extension Category Resolution]
+    I --> J[Check & Resolve Name Collisions]
+    J --> K[Safe Atomic Move Operation]
+    K --> L[Record in Move History]
+    K --> M[Output to GUI & logs/organizer.log]
 ```
 
 ---
 
-## Requirements
+## 📁 Repository Structure
 
-- Python 3.8+ (Tested on Python 3.13)
-- Windows 10 / 11 (Supports macOS & Linux as well)
+```text
+Automated-Desktop-File-Organizer/
+│
+├── src/                               # Application Source Code
+│   ├── __init__.py                    # Package marker
+│   ├── config.py                      # Dataclasses, JSON loader/saver, presets
+│   ├── file_utils.py                  # Extension normalization, unique naming, safe moves
+│   ├── gui.py                         # Tkinter GUI application & event log viewer
+│   ├── history.py                     # Move history persistence & revert tracking
+│   ├── logger.py                      # UTF-8 multi-handler logger (Console + File)
+│   ├── main.py                        # CLI entry point with graceful signal handling
+│   ├── organizer.py                   # File categorization, stability check, move engine
+│   └── watcher.py                     # Watchdog directory observer & worker thread pool
+│
+├── tests/                             # Automated Test Suite (33 Passing Tests)
+│   ├── test_config.py                 # Unit tests for config parsing & path resolution
+│   ├── test_file_utils.py             # Unit tests for unique names & safe move logic
+│   ├── test_gui.py                    # Unit tests for GUI components & presets
+│   ├── test_organizer.py              # Integration tests for categorization & collisions
+│   ├── test_revert.py                 # Integration tests for batch undo & full revert
+│   └── live_verification.py           # Interactive end-to-end sandbox tester
+│
+├── logs/                              # Execution logs & history directory
+│   └── .gitkeep                       # Git directory placeholder (logs are git-ignored)
+│
+├── config.json                        # Default JSON configuration file
+├── pyrightconfig.json                 # Pyright / Pylance static type checker configuration
+├── requirements.txt                   # Production and testing dependencies
+├── run_gui.py                         # Python launcher script for GUI
+├── Start_Organizer_GUI.bat            # 1-Click portable launcher for Windows
+├── CONTRIBUTING.md                    # Guidelines for contributing & reporting issues
+├── README.md                          # Comprehensive project documentation
+├── .gitignore                         # Git exclusion rules
+└── LICENSE                            # MIT License
+```
 
 ---
 
-## Installation & Virtual Environment
+## 💻 Installation & Manual Setup
 
-1. Open PowerShell and navigate to the project directory:
-   ```powershell
-   cd "C:\Users\HP\Desktop\Automated Desktop File Organizer"
-   ```
+If you prefer running via command line instead of the `.bat` file:
 
-2. Create a Python virtual environment:
-   ```powershell
-   python -m venv venv
-   ```
+### 1. Prerequisites
+- **Python 3.10 or higher** installed.
 
-3. Activate the virtual environment:
-   - **PowerShell**:
-     ```powershell
-     .\venv\Scripts\Activate.ps1
-     ```
-   - **Command Prompt**:
-     ```cmd
-     .\venv\Scripts\activate.bat
-     ```
+### 2. Setup Virtual Environment
+```bash
+# Clone the repo
+git clone https://github.com/subediSanjok/Automated-Desktop-File-Organizer.git
+cd Automated-Desktop-File-Organizer
 
-4. Install the required dependencies:
-   ```powershell
-   pip install -r requirements.txt
-   ```
+# Create virtual environment
+python -m venv venv
+
+# Activate on Windows (PowerShell)
+.\venv\Scripts\Activate.ps1
+
+# Activate on Windows (Command Prompt)
+venv\Scripts\activate.bat
+
+# Activate on macOS / Linux
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-## Configuration Guide
+## 🖥️ How to Use
 
-The application is configured using `config.json`:
+### 1. Using the Graphical Interface (GUI)
+
+Launch the GUI using:
+```bash
+python run_gui.py
+```
+*(Or double-click `Start_Organizer_GUI.bat`)*
+
+**In the GUI you can:**
+- Click **"Desktop"** or **"Downloads"** for instant preset directory selection.
+- Click **"Organize Now (Sweep)"** to immediately organize all loose files in the folder.
+- Click **"Start Monitoring"** to run continuous real-time background organization.
+- View real-time operation logs and statistics in the built-in console window.
+- Click **"Undo Last Batch"** to reverse the latest organization operation.
+- Edit categories and file extensions live in the **"Settings & Rules"** tab.
+
+---
+
+### 2. Using the Command Line Interface (CLI)
+
+Run the CLI organizer directly:
+```bash
+# Run with default config (config.json)
+python -m src.main
+
+# Run specifying a custom config file
+python -m src.main --config path/to/custom_config.json
+
+# Run in test/debug mode
+python -m src.main --test
+```
+
+---
+
+### 3. Running Continuously in the Background
+
+To run silently in the background on Windows without a terminal window:
+```powershell
+Start-Process -WindowStyle Hidden "venv\Scripts\pythonw.exe" -ArgumentList "run_gui.py"
+```
+
+---
+
+## ⚙️ Configuration Guide (`config.json`)
+
+The application is fully customizable via `config.json`:
 
 ```json
 {
     "watch_directory": "C:\\FileOrganizerTest",
     "default_category": "Others",
     "ignored_extensions": [
+        ".tmp",
         ".crdownload",
         ".part",
-        ".tmp"
+        ".download",
+        ".partial"
     ],
     "stability": {
-        "check_interval_seconds": 1,
-        "stable_checks": 2,
-        "max_retries": 5
+        "check_interval_seconds": 1.0,
+        "stable_checks": 3,
+        "max_retries": 15
     },
     "categories": {
-        "Documents": [".pdf", ".doc", ".docx", ".txt", ".rtf"],
-        "Spreadsheets": [".xls", ".xlsx", ".csv"],
-        "Images": [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg"],
-        "Videos": [".mp4", ".mkv", ".avi", ".mov", ".webm"],
-        "Music": [".mp3", ".wav", ".flac", ".aac"],
-        "Archives": [".zip", ".rar", ".7z", ".tar", ".gz"],
-        "Applications": [".exe", ".msi"],
-        "Code": [".py", ".js", ".jsx", ".ts", ".tsx", ".java", ".html", ".css", ".json"]
+        "Documents": [".pdf", ".docx", ".doc", ".txt", ".xlsx", ".pptx", ".csv"],
+        "Images": [".jpg", ".jpeg", ".png", ".gif", ".svg", ".webp", ".ico"],
+        "Videos": [".mp4", ".mkv", ".mov", ".avi", ".flv", ".webm"],
+        "Audio": [".mp3", ".wav", ".aac", ".flac", ".ogg", ".m4a"],
+        "Archives": [".zip", ".rar", ".7z", ".tar", ".gz", ".iso"],
+        "Code": [".py", ".js", ".html", ".css", ".json", ".cpp", ".java", ".ts"],
+        "Executables": [".exe", ".msi", ".bat", ".cmd", ".ps1"]
     }
 }
 ```
 
-### Configuration Options
-
-| Key | Description | Default |
-|---|---|---|
-| `watch_directory` | Absolute path of the folder to monitor. | `C:\FileOrganizerTest` |
-| `default_category` | Folder name for unsupported extensions. | `Others` |
-| `ignored_extensions` | List of extensions to ignore (e.g. temporary download files). | `[".crdownload", ".part", ".tmp"]` |
-| `stability.check_interval_seconds` | Seconds between consecutive file size checks. | `1` |
-| `stability.stable_checks` | Number of matching size readings required to consider file ready. | `2` |
-| `stability.max_retries` | Max attempts before giving up on an unstable file. | `5` |
-| `categories` | Dictionary mapping folder names to extension lists. | See above |
+### Configuration Parameters:
+- `watch_directory`: Absolute path of the folder to monitor and organize.
+- `default_category`: Folder name where files with unmatched extensions are placed (`Others`).
+- `ignored_extensions`: List of extension patterns to completely skip until completed.
+- `stability.check_interval_seconds`: Wait duration between file size checks.
+- `stability.stable_checks`: Number of consecutive identical size checks required before moving.
+- `stability.max_retries`: Maximum number of checks before logging a warning and waiting.
+- `categories`: Dictionary mapping category folder names to file extensions.
 
 ---
 
-## How to Run
+## 🛡️ Safety Guarantees & Revert System
 
-### 🖥️ Option 1: Graphical User Interface (Recommended)
-
-Launch the modern GUI dashboard:
-
-```powershell
-python run_gui.py
-```
-*(Or via module execution)*:
-```powershell
-python -m src.gui
-```
-*(Or via main CLI flag)*:
-```powershell
-python src\main.py --gui
-```
-
-**GUI Features:**
-- 🖥️ **Quick Presets**: 1-click switch between Windows **Desktop** (`~/Desktop`) and **Downloads** (`~/Downloads`).
-- ⚡ **Organize Now**: Instantly sweep and categorize all existing loose files with a progress bar.
-- 🟢 **Live Watcher**: Start/Stop real-time background watchdog monitoring.
-- 📂 **Rule & Category Manager**: Add custom categories, edit file extensions, and save updates directly to `config.json`.
-- 📊 **Real-Time Activity Log**: Live colored activity stream and organized file count.
+1. **Zero Data Deletion**: Files are strictly moved using atomic filesystem operations; files are never deleted.
+2. **Duplicate Protection**: If a file named `invoice.pdf` already exists in `Documents/`, the new file is safely moved as `invoice_1.pdf`.
+3. **Subfolder Loop Prevention**: Monitored subdirectories (e.g. `Documents/`, `Images/`) are filtered out so they never trigger recursive organizational loops.
+4. **Revert / Rollback Support**:
+   - **Undo Batch**: Restores files organized during the last session back to their original location.
+   - **Revert Directory**: Sweeps all files from category subfolders back to the root folder and automatically prunes empty category folders.
 
 ---
 
-### 💻 Option 2: Command-Line Interface (CLI)
+## 🧪 Running the Test Suite
 
-Run the organizer directly in your terminal:
+The project includes an extensive test suite covering configuration, file utilities, duplicate handling, stability verification, GUI components, and revert mechanics.
 
-```powershell
-python src\main.py
+Run all tests via pytest:
+```bash
+pytest
 ```
 
-Or with a custom configuration path:
-
-```powershell
-python src\main.py --config "path/to/custom_config.json"
-```
-
-To stop CLI monitoring, press `Ctrl + C`. The application will finish processing in-flight files and exit cleanly.
-
----
-
-## Running in Background on Windows
-
-### Method 1: Using `pythonw.exe` (No Terminal Window)
-
-`pythonw.exe` runs Python scripts without opening a command prompt window:
-
-```powershell
-Start-Process -FilePath ".\venv\Scripts\pythonw.exe" -ArgumentList "src\main.py"
-```
-
-To stop the background process:
-```powershell
-Stop-Process -Name "pythonw"
-```
-
-### Method 2: Windows Task Scheduler (Start at Login)
-
-1. Open **Task Scheduler** (`taskschd.msc`).
-2. Click **Create Task...**
-3. On the **General** tab:
-   - Name: `Automated File Organizer`
-   - Run whether user is logged on or not / Run only when user is logged on.
-4. On the **Triggers** tab:
-   - New -> Begin the task: **At log on**.
-5. On the **Actions** tab:
-   - Action: **Start a program**
-   - Program/script: `C:\Users\<username>\Desktop\Automated Desktop File Organizer\venv\Scripts\pythonw.exe`
-   - Add arguments: `src\main.py`
-   - Start in: `C:\Users\<username>\Desktop\Automated Desktop File Organizer`
-6. Click **OK**.
-
----
-
-## How to Switch to Real Downloads Directory
-
-Once you have verified the organizer with `C:\FileOrganizerTest`, switch to your Windows Downloads folder:
-
-1. Open `config.json` in any text editor.
-2. Update `"watch_directory"` with your Downloads path (remember to double-escape backslashes `\\` in JSON):
-
-```json
-{
-    "watch_directory": "C:\\Users\\HP\\Downloads",
-    ...
-}
-```
-
-3. Save `config.json` and start the application:
-```powershell
-.\venv\Scripts\python src\main.py
+Run static type checking with Pyright:
+```bash
+npx pyright
 ```
 
 ---
 
-## Testing
-
-### Automated Unit & Integration Tests
-
-Run the full pytest suite:
-
-```powershell
-.\venv\Scripts\pytest -v
-```
-
-### Live Test Directory Verification
-
-Run the end-to-end live tester that creates a temporary `C:\FileOrganizerTest` directory, verifies file categorization, duplicate naming, stability checking, temporary file filtering, and cleans up:
-
-```powershell
-.\venv\Scripts\python tests\live_verification.py
-```
-
----
-
-## Safety Guarantees
-
-- 🚫 **Never Deletes Files**: The application only executes safe moves (`shutil.move`).
-- 🚫 **Never Overwrites Files**: If a file with the same name exists at destination, a unique index is appended (`filename_1.ext`).
-- 🚫 **Never Reorganizes Subfolders**: Subdirectories inside the watch path (such as `Documents/`) are excluded from triggering organizer loops.
-- 🚫 **Never Moves Incomplete Downloads**: Actively written files are checked for stability before moving.
-
----
-
-## Troubleshooting
+## ❓ Troubleshooting & FAQ
 
 ### 1. `PermissionError` when moving files
-- **Cause**: An external application (like an active PDF reader, video player, or installer) has an exclusive lock on the file.
-- **Resolution**: Close the application holding the lock. The organizer will process the file on the next change event.
+- **Cause**: An application (such as Adobe Acrobat, Word, or an active torrent/browser download) has locked the file.
+- **Solution**: Once the program finishes writing or is closed, the organizer processes the file on the next change event.
 
-### 2. Files not moving
-- Check `logs/organizer.log` for error or warning entries.
-- Ensure the extension is mapped in `config.json` or check the `Others` directory.
-- Verify that `watch_directory` in `config.json` matches your monitored folder path.
+### 2. Can I use this on multiple laptops?
+- **Yes.** Simply clone or copy the folder to any Windows laptop with Python installed and double-click `Start_Organizer_GUI.bat`. It handles virtual environment creation and package installation automatically.
+
+### 3. How do I organize my real Windows Downloads folder?
+- Open the GUI and click the **"Downloads"** preset button, then click **"Start Monitoring"** or **"Organize Now"**.
 
 ---
 
-## Author & Project Owner
+## 🤝 Contributing Guidelines
+
+Contributions are welcome! If you would like to contribute:
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`).
+3. Ensure all tests pass (`pytest`).
+4. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+5. Push to the branch (`git push origin feature/AmazingFeature`).
+6. Open a Pull Request.
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for full details.
+
+---
+
+## 👤 Author & Project Owner
 
 **Sanjok Subedi**  
-- GitHub: [@subediSanjok](https://github.com/subediSanjok)  
-- Repository: [Automated-Desktop-File-Organizer](https://github.com/subediSanjok/Automated-Desktop-File-Organizer)
+- **GitHub**: [@subediSanjok](https://github.com/subediSanjok)  
+- **Project Repository**: [Automated-Desktop-File-Organizer](https://github.com/subediSanjok/Automated-Desktop-File-Organizer)
 
 ---
 
-## License
+## 📜 License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
-
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
