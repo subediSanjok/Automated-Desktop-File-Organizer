@@ -3,7 +3,17 @@
   "venv": "venv",
   "pythonVersion": "3.13",
   "typeCheckingMode": "basic",
-  "extraPaths": [
-    "."
+  "include": [
+    "src",
+    "tests",
+    "run_gui.py"
+  ],
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": [
+        "."
+      ]
+    }
   ]
 }
