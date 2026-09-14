@@ -1,0 +1,71 @@
+{
+    "watch_directory": "C:\\FileOrganizerTest",
+    "default_category": "Others",
+    "ignored_extensions": [
+        ".crdownload",
+        ".part",
+        ".tmp"
+    ],
+    "stability": {
+        "check_interval_seconds": 1,
+        "stable_checks": 2,
+        "max_retries": 5
+    },
+    "categories": {
+        "Documents": [
+            ".pdf",
+            ".doc",
+            ".docx",
+            ".txt",
+            ".rtf"
+        ],
+        "Spreadsheets": [
+            ".xls",
+            ".xlsx",
+            ".csv"
+        ],
+        "Images": [
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".gif",
+            ".webp",
+            ".svg"
+        ],
+        "Videos": [
+            ".mp4",
+            ".mkv",
+            ".avi",
+            ".mov",
+            ".webm"
+        ],
+        "Music": [
+            ".mp3",
+            ".wav",
+            ".flac",
+            ".aac"
+        ],
+        "Archives": [
+            ".zip",
+            ".rar",
+            ".7z",
+            ".tar",
+            ".gz"
+        ],
+        "Applications": [
+            ".exe",
+            ".msi"
+        ],
+        "Code": [
+            ".py",
+            ".js",
+            ".jsx",
+            ".ts",
+            ".tsx",
+            ".java",
+            ".html",
+            ".css",
+            ".json"
+        ]
+    }
+}
