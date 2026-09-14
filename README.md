@@ -17,7 +17,9 @@ A lightweight, robust, and continuous background file organizer built in Python 
 - [Testing](#testing)
 - [Safety Guarantees](#safety-guarantees)
 - [Troubleshooting](#troubleshooting)
+- [Author & Project Owner](#author--project-owner)
 - [License](#license)
+
 
 ---
 
@@ -305,6 +307,15 @@ Run the end-to-end live tester that creates a temporary `C:\FileOrganizerTest` d
 
 ---
 
+## Author & Project Owner
+
+**Sanjok Subedi**  
+- GitHub: [@subediSanjok](https://github.com/subediSanjok)  
+- Repository: [Automated-Desktop-File-Organizer](https://github.com/subediSanjok/Automated-Desktop-File-Organizer)
+
+---
+
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+

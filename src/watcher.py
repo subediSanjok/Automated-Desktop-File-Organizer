@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import queue
 import threading
 from concurrent.futures import ThreadPoolExecutor
@@ -14,6 +15,7 @@ from watchdog.events import (
     FileSystemEventHandler,
 )
 from watchdog.observers import Observer
+from watchdog.observers.api import BaseObserver
 
 from src.config import AppConfig
 from src.file_utils import ensure_directory_exists
@@ -36,7 +38,7 @@ class FileOrganizerEventHandler(FileSystemEventHandler):
         """Triggered when a file or directory is created."""
         if event.is_directory:
             return
-        path = Path(event.src_path)
+        path = Path(os.fsdecode(event.src_path))
         self.event_queue.put(path)
 
     def on_moved(self, event: FileSystemEvent) -> None:
@@ -46,7 +48,7 @@ class FileOrganizerEventHandler(FileSystemEventHandler):
         # In Watchdog, dest_path is the new file path after rename
         dest_path = getattr(event, "dest_path", None)
         if dest_path:
-            path = Path(dest_path)
+            path = Path(os.fsdecode(dest_path))
             self.event_queue.put(path)
 
 
@@ -65,7 +67,7 @@ class FileWatcher:
         self.logger = logger or organizer.logger
         self.max_workers = max_workers
         self.event_queue: queue.Queue[Path] = queue.Queue()
-        self.observer: Optional[Observer] = None
+        self.observer: Optional[BaseObserver] = None
         self.executor: Optional[ThreadPoolExecutor] = None
         self.dispatcher_thread: Optional[threading.Thread] = None
         self._stop_event = threading.Event()
@@ -123,10 +125,11 @@ class FileWatcher:
 
         # Start watchdog observer
         event_handler = FileOrganizerEventHandler(self.event_queue, self.logger)
-        self.observer = Observer()
+        observer: BaseObserver = Observer()
         # recursive=False ensures subcategory folders do not trigger recursive events
-        self.observer.schedule(event_handler, str(watch_path), recursive=False)
-        self.observer.start()
+        observer.schedule(event_handler, str(watch_path), recursive=False)
+        observer.start()
+        self.observer = observer
 
         self.logger.info(f"Organizer started. Monitoring: {watch_path.resolve()}")
 

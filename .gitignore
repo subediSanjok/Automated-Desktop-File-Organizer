@@ -41,9 +41,11 @@ env/
 .coverage
 htmlcov/
 
-# Logs
-logs/*.log
+# Logs and runtime history
+logs/*
 !logs/.gitkeep
+*.log
+
 
 # Temporary Test Directory
 /FileOrganizerTest/
