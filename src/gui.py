@@ -859,7 +859,12 @@ def launch_gui(config_path: Optional[Path | str]=None) -> None:
     """Entry point to start the Tkinter GUI."""
     root = tk.Tk()
     _app = FileOrganizerGUI(root, config_path=config_path)
+    root.lift()
+    root.attributes("-topmost", True)
+    root.after_idle(root.attributes, "-topmost", False)
+    root.focus_force()
     root.mainloop()
+
 
 
 if __name__ == "__main__":
