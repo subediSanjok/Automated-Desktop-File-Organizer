@@ -96,7 +96,7 @@ class AppConfig:
         return norm_ext in self.ignored_extensions
 
 
-def load_config(config_path: Optional[Path | str] = None) -> AppConfig:
+def load_config(config_path: Optional[Path | str]=None) -> AppConfig:
     """Load and parse application configuration from a JSON file.
 
     Args:
@@ -141,7 +141,7 @@ def load_config(config_path: Optional[Path | str] = None) -> AppConfig:
         return AppConfig()
 
 
-def save_config(config: AppConfig, config_path: Optional[Path | str] = None) -> Path:
+def save_config(config: AppConfig, config_path: Optional[Path | str]=None) -> Path:
     """Save application configuration to a JSON file.
 
     Args:

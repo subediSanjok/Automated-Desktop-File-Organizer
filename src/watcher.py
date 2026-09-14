@@ -59,8 +59,8 @@ class FileWatcher:
         self,
         config: AppConfig,
         organizer: FileOrganizer,
-        logger: Optional[logging.Logger] = None,
-        max_workers: int = 4,
+        logger: Optional[logging.Logger]=None,
+        max_workers: int=4,
     ) -> None:
         self.config = config
         self.organizer = organizer

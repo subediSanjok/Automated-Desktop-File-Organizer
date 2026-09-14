@@ -41,7 +41,7 @@ class TkinterLogHandler(logging.Handler):
 class FileOrganizerGUI:
     """Main Application GUI Window."""
 
-    def __init__(self, root: tk.Tk, config_path: Optional[Path | str] = None) -> None:
+    def __init__(self, root: tk.Tk, config_path: Optional[Path | str]=None) -> None:
         self.root = root
         self.root.title("Automated Desktop & Downloads File Organizer")
         self.root.geometry("1020x750")
@@ -664,6 +664,7 @@ class FileOrganizerGUI:
         self.progress_var.set(0)
 
         def run_batch() -> None:
+
             def progress(current: int, total: int, filename: str) -> None:
                 percent = (current / total) * 100 if total > 0 else 100
                 self.root.after(0, lambda: self.progress_var.set(percent))
@@ -710,6 +711,7 @@ class FileOrganizerGUI:
         self.progress_var.set(0)
 
         def run_revert() -> None:
+
             def progress(current: int, total: int, filename: str) -> None:
                 percent = (current / total) * 100 if total > 0 else 100
                 self.root.after(0, lambda: self.progress_var.set(percent))
@@ -746,6 +748,7 @@ class FileOrganizerGUI:
         self.progress_var.set(0)
 
         def run_dir_revert() -> None:
+
             def progress(current: int, total: int, filename: str) -> None:
                 percent = (current / total) * 100 if total > 0 else 100
                 self.root.after(0, lambda: self.progress_var.set(percent))
@@ -852,7 +855,7 @@ class FileOrganizerGUI:
         self.root.destroy()
 
 
-def launch_gui(config_path: Optional[Path | str] = None) -> None:
+def launch_gui(config_path: Optional[Path | str]=None) -> None:
     """Entry point to start the Tkinter GUI."""
     root = tk.Tk()
     _app = FileOrganizerGUI(root, config_path=config_path)

@@ -25,8 +25,8 @@ class FileOrganizer:
     def __init__(
         self,
         config: AppConfig,
-        logger: Optional[logging.Logger] = None,
-        history_manager: Optional[MoveHistoryManager] = None,
+        logger: Optional[logging.Logger]=None,
+        history_manager: Optional[MoveHistoryManager]=None,
     ) -> None:
         self.config = config
         self.logger = logger or setup_logger()
@@ -132,8 +132,8 @@ class FileOrganizer:
 
     def organize_directory(
         self,
-        target_dir: Optional[Path | str] = None,
-        progress_callback: Optional[Callable[[int, int, str], None]] = None,
+        target_dir: Optional[Path | str]=None,
+        progress_callback: Optional[Callable[[int, int, str], None]]=None,
     ) -> List[Path]:
         """Perform a batch sweep of all loose files in the directory.
 
@@ -210,8 +210,8 @@ class FileOrganizer:
 
     def revert_batch(
         self,
-        batch_id: Optional[str] = None,
-        progress_callback: Optional[Callable[[int, int, str], None]] = None,
+        batch_id: Optional[str]=None,
+        progress_callback: Optional[Callable[[int, int, str], None]]=None,
     ) -> List[Path]:
         """Revert all files from a specific batch (or the most recent batch).
 
@@ -254,8 +254,8 @@ class FileOrganizer:
 
     def revert_directory(
         self,
-        target_dir: Optional[Path | str] = None,
-        progress_callback: Optional[Callable[[int, int, str], None]] = None,
+        target_dir: Optional[Path | str]=None,
+        progress_callback: Optional[Callable[[int, int, str], None]]=None,
     ) -> List[Path]:
         """Sweep all files from category subfolders back to the root directory.
 

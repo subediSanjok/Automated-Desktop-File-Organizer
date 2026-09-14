@@ -37,7 +37,7 @@ class MoveRecord:
 class MoveHistoryManager:
     """Manages persistent move records to support undo / revert operations."""
 
-    def __init__(self, history_file: Optional[Path | str] = None) -> None:
+    def __init__(self, history_file: Optional[Path | str]=None) -> None:
         self.history_file = (
             Path(history_file) if history_file else Path("logs") / "move_history.json"
         )

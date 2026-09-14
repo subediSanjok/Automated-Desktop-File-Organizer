@@ -71,10 +71,10 @@ def ensure_directory_exists(directory: Path | str) -> Path:
 
 def is_file_stable(
     file_path: Path | str,
-    check_interval_seconds: float = 1.0,
-    stable_checks: int = 2,
-    max_retries: int = 5,
-    sleep_fn: Callable[[float], None] = time.sleep,
+    check_interval_seconds: float=1.0,
+    stable_checks: int=2,
+    max_retries: int=5,
+    sleep_fn: Callable[[float], None]=time.sleep,
 ) -> bool:
     """Check if a file's size is stable and no longer actively written/downloaded.
 

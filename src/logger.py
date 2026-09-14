@@ -7,9 +7,9 @@ from typing import Optional
 
 
 def setup_logger(
-    name: str = "file_organizer",
-    log_file: Optional[Path] = None,
-    level: int = logging.INFO,
+    name: str="file_organizer",
+    log_file: Optional[Path]=None,
+    level: int=logging.INFO,
 ) -> logging.Logger:
     """Set up and return a logger with both console and file handlers.
 
