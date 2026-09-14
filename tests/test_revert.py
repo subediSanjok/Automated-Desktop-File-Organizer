@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from src.config import AppConfig, StabilityConfig
-from src.history import MoveHistoryManager, MoveRecord
+from src.history import MoveHistoryManager
 from src.organizer import FileOrganizer
 
 
